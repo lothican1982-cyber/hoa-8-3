@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tặng Hoa</title>
+
+<style>
+
+body{
+margin:0;
+overflow:hidden;
+}
+
+/* nền 7 màu */
+
+html,body{
+height:100%;
+margin:0;
+}
+
+body{
+background:linear-gradient(
+90deg,
+red,
+orange,
+yellow,
+green,
+cyan,
+blue,
+violet
+);
+background-size:400% 400%;
+animation:rainbow 30s linear infinite;
+}
+
+@keyframes rainbow{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+/* tiêu đề */
+
+.title{
+position:absolute;
+top:10px;
+width:100%;
+text-align:center;
+
+font-size:60px;
+font-weight:bold;
+font-family:Arial;
+
+color:white;
+text-shadow:0 0 10px pink,0 0 20px red,0 0 40px hotpink;
+
+animation:glow 3s infinite alternate;
+}
+
+@keyframes glow{
+0%{
+text-shadow:0 0 10px pink,0 0 20px red,0 0 40px hotpink;
+}
+100%{
+text-shadow:0 0 20px white,0 0 40px pink,0 0 60px red;
+}
+}
+
+/* bó hoa */
+
+.bouquet{
+position:absolute;
+bottom:40px;
+left:30%;
+transform:translateX(-50%);
+}
+
+/* bông hoa */
+
+.flower{
+position:absolute;
+width:600px;
+bottom:0;
+left:0;
+transform-origin:bottom center;
+cursor:pointer;
+}
+
+/* cánh hoa rơi */
+
+.falling{
+position:absolute;
+width:25px;
+opacity:0.7;
+animation:fall linear forwards;
+}
+
+@keyframes fall{
+
+0%{transform:translate(0,-50px) rotate(0deg);}
+25%{transform:translate(40px,25vh) rotate(90deg);}
+50%{transform:translate(-40px,50vh) rotate(180deg);}
+75%{transform:translate(30px,75vh) rotate(270deg);}
+100%{transform:translate(-30px,110vh) rotate(360deg);}
+
+}
+
+/* sparkle */
+
+.sparkle{
+position:absolute;
+width:5px;
+height:5px;
+background:radial-gradient(circle,white 0%,pink 40%,transparent 70%);
+box-shadow:0 0 10px white,0 0 25px pink,0 0 40px pink;
+animation:sparkleAnim 1.2s ease-out forwards;
+pointer-events:none;
+z-index:9999;
+}
+
+@keyframes sparkleAnim{
+
+0%{
+transform:scale(0) rotate(45deg);
+opacity:1;
+}
+
+50%{
+transform:scale(1.5) rotate(45deg);
+opacity:1;
+}
+
+100%{
+transform:scale(2) rotate(45deg);
+opacity:0;
+}
+
+}
+
+/* trái tim */
+
+.heart{
+position:absolute;
+width:15px;
+height:15px;
+background:red;
+transform:rotate(45deg);
+opacity:0.9;
+transition:transform 1s linear, opacity 1s;
+pointer-events:none;
+}
+
+.heart:before,
+.heart:after{
+content:"";
+position:absolute;
+width:15px;
+height:15px;
+background:red;
+border-radius:50%;
+}
+
+.heart:before{
+top:-7px;
+left:0;
+}
+
+.heart:after{
+left:-7px;
+top:0;
+}
+
+/* nút nhạc */
+
+.musicBtn{
+position:fixed;
+top:20px;
+right:20px;
+font-size:20px;
+padding:10px 15px;
+border:none;
+border-radius:10px;
+background:white;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="title">Chúc mừng ngày 8/3 🌸</div>
+
+<button class="musicBtn" id="musicBtn">🔊 Bật nhạc</button>
+
+<audio id="music" loop>
+<source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div class="bouquet">
+
+<img src="flower.png" class="flower" style="transform:rotate(-40deg);">
+<img src="flower.png" class="flower" style="transform:rotate(0deg);">
+<img src="flower.png" class="flower" style="transform:rotate(40deg);">
+
+</div>
+
+<script>
+
+/* nhạc */
+
+let music=document.getElementById("music");
+let btn=document.getElementById("musicBtn");
+music.volume = 0.5;   
+let started=false;
+
+document.body.addEventListener("click",function(){
+
+if(!started){
+music.play();
+btn.innerText="🔊 Tắt nhạc";
+started=true;
+}
+
+},{once:true});
+
+btn.onclick=function(){
+
+if(music.paused){
+music.play();
+btn.innerText="🔊 Tắt nhạc";
+}
+else{
+music.pause();
+btn.innerText="🔈 Bật nhạc";
+}
+
+};
+
+/* click hoa bay tim */
+
+let flowers=document.querySelectorAll(".flower");
+
+flowers.forEach(function(flower){
+
+flower.onclick=function(e){
+
+for(let i=0;i<20;i++){
+
+let petal=document.createElement("div");
+petal.className="heart";
+
+petal.style.left=e.pageX+"px";
+petal.style.top=e.pageY+"px";
+
+document.body.appendChild(petal);
+
+let angle=Math.random()*2*Math.PI;
+let distance=Math.random()*150;
+
+let x=Math.cos(angle)*distance;
+let y=Math.sin(angle)*distance;
+
+setTimeout(function(){
+petal.style.transform="translate("+x+"px,"+y+"px)";
+petal.style.opacity="0";
+},10);
+
+setTimeout(function(){
+petal.remove();
+},1000);
+
+}
+
+}
+
+});
+
+/* cánh hoa rơi */
+
+function createFallingPetal(){
+
+let petal=document.createElement("img");
+
+petal.src="petal.png";
+petal.className="falling";
+
+petal.style.left=Math.random()*window.innerWidth+"px";
+
+let duration=6+Math.random()*4;
+
+petal.style.animationDuration=duration+"s";
+
+document.body.appendChild(petal);
+
+setTimeout(function(){
+petal.remove();
+},duration*1000);
+
+}
+
+setInterval(createFallingPetal,400);
+
+/* sparkle */
+
+function createSparkle(){
+
+let flowers=document.querySelectorAll(".flower");
+
+let flower=flowers[Math.floor(Math.random()*flowers.length)];
+
+let rect=flower.getBoundingClientRect();
+
+let sparkle=document.createElement("div");
+sparkle.className="sparkle";
+
+sparkle.style.left=rect.left + rect.width/2 + (Math.random()*120-60) + "px";
+sparkle.style.top=rect.top + rect.height*0.25 + (Math.random()*80-40) + "px";
+
+document.body.appendChild(sparkle);
+
+setTimeout(function(){
+sparkle.remove();
+},1200);
+
+}
+
+setInterval(createSparkle,200);
+
+</script>
+
+</body>
+</html>
